@@ -238,3 +238,12 @@
 - 完成点：已在 `pyproject.toml` 中新增 `build` 依赖组并加入 PyInstaller；已创建 `dist/.gitkeep` 保留打包目录；`.gitignore` 已忽略 `build/` 和 `dist/` 下的实际产物；已新增 `打包文档.md`，明确 Windows 包需要在 Windows 平台构建。
 - 验证结果：已运行 `UV_CACHE_DIR=/tmp/uv-cache uv lock` 更新 `uv.lock`，锁定 PyInstaller 及其相关依赖；已运行 `UV_CACHE_DIR=/tmp/uv-cache uv run --group build pyinstaller --version` 确认 PyInstaller 版本为 `6.20.0`；已运行 `UV_CACHE_DIR=/tmp/uv-cache uv run python -m compileall prompt_manager_2_0 main.py` 通过语法检查。
 - 后续事项：需要分别在 Windows、macOS、Linux 目标平台执行文档中的打包命令，并在无 Python 环境机器上验证发行包运行效果。
+
+### 2026-05-22：调整 exe 控制台驻留和日志输出
+
+- 需求内容：exe 包启动后黑色控制台窗口需要驻留不消失，运行日志输出到该终端。
+- 需求分析：Prompt Manager 2.0 是本地 Web 服务，控制台窗口应作为服务进程窗口保留；打包时不能使用 `--windowed` 或 `--noconsole`；程序启动日志、Uvicorn/NiceGUI 日志和异常堆栈需要直接输出到标准输出，便于用户反馈问题。
+- 任务拆分：入口配置控制台日志；启动时输出访问地址和窗口关闭提示；打包环境下异常退出前等待用户按回车，避免窗口一闪而过；打包文档中的 PyInstaller 命令显式增加 `--console`。
+- 完成点：入口已统一到包内 `prompt_manager_2_0.main`；启动时会在控制台输出服务地址和窗口关闭提示；日志已配置到标准输出；打包后的异常退出会等待用户按回车；打包文档已明确使用 `--console` 并提示不要使用 `--windowed` 或 `--noconsole`。
+- 验证结果：已运行 `UV_CACHE_DIR=/tmp/uv-cache uv run python -m compileall prompt_manager_2_0 main.py` 通过语法检查；已运行入口导入检查；已重启 8080 服务，控制台输出启动提示、NiceGUI/Uvicorn 日志和访问日志。
+- 后续事项：需要在 Windows 真实 exe 包中确认双击启动后控制台驻留、异常时暂停退出，以及用户关闭控制台会停止服务的行为符合预期。
