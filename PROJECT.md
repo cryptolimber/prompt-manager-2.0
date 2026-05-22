@@ -247,3 +247,12 @@
 - 完成点：入口已统一到包内 `prompt_manager_2_0.main`；启动时会在控制台输出服务地址和窗口关闭提示；日志已配置到标准输出；打包后的异常退出会等待用户按回车；打包文档已明确使用 `--console` 并提示不要使用 `--windowed` 或 `--noconsole`。
 - 验证结果：已运行 `UV_CACHE_DIR=/tmp/uv-cache uv run python -m compileall prompt_manager_2_0 main.py` 通过语法检查；已运行入口导入检查；已重启 8080 服务，控制台输出启动提示、NiceGUI/Uvicorn 日志和访问日志。
 - 后续事项：需要在 Windows 真实 exe 包中确认双击启动后控制台驻留、异常时暂停退出，以及用户关闭控制台会停止服务的行为符合预期。
+
+### 2026-05-22：Windows 打包命令改为 CMD 格式
+
+- 需求内容：`打包文档.md` 中 Windows 打包命令使用 CMD，而不是 PowerShell。
+- 需求分析：PowerShell 使用反引号续行，CMD 使用 `^` 续行，两者不可混用；文档应直接给出 CMD 可复制执行的命令。
+- 任务拆分：将 Windows 打包说明从 PowerShell 改为 CMD；代码块语言从 `powershell` 改为 `bat`；续行符从反引号改为 `^`。
+- 完成点：`打包文档.md` 的 Windows 打包说明已改为 Windows CMD；PyInstaller 命令已使用 CMD 的 `^` 续行符。
+- 验证结果：已检查文档片段，确认代码块为 `bat`，命令不再使用 PowerShell 反引号。
+- 后续事项：需要在 Windows CMD 中实际执行一次打包命令，确认 uv 和 PyInstaller 在目标环境中可正常运行。
