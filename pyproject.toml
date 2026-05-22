@@ -1,0 +1,14 @@
+[project]
+name = "prompt-manager-2-0"
+version = "0.1.0"
+description = "提示词管理项目"
+readme = "PROJECT.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "nicegui>=3.0,<4.0",
+    "peewee>=3.17,<4.0",
+    "pymysql>=1.1,<2.0",
+]
+
+[tool.uv]
+package = false
