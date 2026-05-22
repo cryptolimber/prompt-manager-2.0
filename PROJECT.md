@@ -229,3 +229,12 @@
 - 完成点：已初始化 Git 仓库；`.gitignore` 已忽略 `.idea/`、`.venv/` 和 Python 缓存；项目源码、配置、锁文件、需求档案和项目概览已纳入初次提交。
 - 验证结果：已执行 `git status --ignored --short` 确认 `.idea/`、`.venv/` 和缓存目录处于忽略状态；已创建提交 `prompt_manager_2.0 v1 初版`。
 - 后续事项：如后续需要推送远程仓库，需要再配置 remote 并执行 push。
+
+### 2026-05-22：补充 PyInstaller 绿色包打包约定
+
+- 需求内容：使用 PyInstaller 方式打包项目；在当前项目下新建 `dist/` 目录，每次打包产物都放入该目录；新增 `打包文档.md` 记录详细步骤；明确 Linux 环境能否直接打包 Windows 可执行文件。
+- 需求分析：绿色包目标是不要求用户电脑预装 Python；PyInstaller 适合按平台生成可执行目录，但不能在 Linux 下直接可靠地产出 Windows `.exe`，Windows 包应在 Windows、Windows 虚拟机或 Windows CI 中构建。
+- 任务拆分：补充构建依赖组；创建可被 Git 保留的 `dist/` 目录；忽略 `dist/` 中的实际打包产物和 `build/` 临时目录；新增打包文档，记录 Windows、macOS、Linux 的打包命令和验证清单。
+- 完成点：已在 `pyproject.toml` 中新增 `build` 依赖组并加入 PyInstaller；已创建 `dist/.gitkeep` 保留打包目录；`.gitignore` 已忽略 `build/` 和 `dist/` 下的实际产物；已新增 `打包文档.md`，明确 Windows 包需要在 Windows 平台构建。
+- 验证结果：已运行 `UV_CACHE_DIR=/tmp/uv-cache uv lock` 更新 `uv.lock`，锁定 PyInstaller 及其相关依赖；已运行 `UV_CACHE_DIR=/tmp/uv-cache uv run --group build pyinstaller --version` 确认 PyInstaller 版本为 `6.20.0`；已运行 `UV_CACHE_DIR=/tmp/uv-cache uv run python -m compileall prompt_manager_2_0 main.py` 通过语法检查。
+- 后续事项：需要分别在 Windows、macOS、Linux 目标平台执行文档中的打包命令，并在无 Python 环境机器上验证发行包运行效果。
