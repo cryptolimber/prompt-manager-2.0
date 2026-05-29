@@ -79,9 +79,9 @@ def add_prompt_table_styles() -> None:
             position: sticky;
             right: 0;
             z-index: 3;
-            width: 148px;
-            min-width: 148px;
-            max-width: 148px;
+            width: 172px;
+            min-width: 172px;
+            max-width: 172px;
             background: #fff;
             box-shadow: -1px 0 0 rgba(0, 0, 0, 0.08);
         }
@@ -92,7 +92,7 @@ def add_prompt_table_styles() -> None:
             justify-content: flex-start;
             align-items: center;
             gap: 2px;
-            min-width: 124px;
+            min-width: 148px;
         }
 
         .prompt-table .q-table thead tr th:first-child,
@@ -224,13 +224,12 @@ def create_prompt_manage_page() -> None:
                         ui.label(value).classes("flex-1 whitespace-pre-wrap")
                         ui.button(
                             "复制",
-                            icon="content_copy",
                             on_click=lambda code=value: copy_prompt_code(code),
                         ).props("outline dense")
                     else:
                         ui.label(value).classes("flex-1 whitespace-pre-wrap")
             with ui.row().classes("justify-end w-full"):
-                ui.button("关闭", icon="close", on_click=dialog.close)
+                ui.button("关闭", on_click=dialog.close)
         dialog.open()
 
     def copy_prompt_code(code: str) -> None:
@@ -288,8 +287,8 @@ def create_prompt_manage_page() -> None:
                 load_rows()
 
             with ui.row().classes("justify-end w-full"):
-                ui.button("取消", icon="close", on_click=dialog.close).props("flat")
-                ui.button("保存", icon="save", on_click=save)
+                ui.button("取消", on_click=dialog.close).props("flat")
+                ui.button("保存", on_click=save)
         dialog.open()
 
     def show_editor(prompt_id: int) -> None:
@@ -345,8 +344,8 @@ def create_prompt_manage_page() -> None:
                 load_rows()
 
             with ui.row().classes("justify-end w-full"):
-                ui.button("取消", icon="close", on_click=dialog.close).props("flat")
-                ui.button("保存", icon="save", on_click=save)
+                ui.button("取消", on_click=dialog.close).props("flat")
+                ui.button("保存", on_click=save)
         dialog.open()
 
     def delete_prompt(prompt_id: int) -> None:
@@ -373,8 +372,8 @@ def create_prompt_manage_page() -> None:
                 load_rows()
 
             with ui.row().classes("justify-end w-full"):
-                ui.button("取消", icon="close", on_click=dialog.close).props("flat")
-                ui.button("删除", icon="delete", on_click=confirm).props("color=negative")
+                ui.button("取消", on_click=dialog.close).props("flat")
+                ui.button("删除", on_click=confirm).props("color=negative")
         dialog.open()
 
     def handle_action(event) -> None:
@@ -432,8 +431,8 @@ def create_prompt_manage_page() -> None:
                 dialog.close()
 
             with ui.row().classes("justify-end w-full"):
-                ui.button("取消", icon="close", on_click=dialog.close).props("flat")
-                ui.button("推送", icon="upload", on_click=confirm_publish)
+                ui.button("取消", on_click=dialog.close).props("flat")
+                ui.button("推送", on_click=confirm_publish)
         dialog.open()
 
     columns = [
@@ -482,18 +481,16 @@ def create_prompt_manage_page() -> None:
             value=state["environment_id"],
             on_change=on_environment_change,
         ).classes("min-w-72")
-        ui.button("刷新环境", icon="refresh", on_click=refresh_environment_options).props("outline")
+        ui.button("刷新环境", on_click=refresh_environment_options).props("outline")
         ui.button("刷新数据库", on_click=load_rows)
         create_button = ui.button(
             "新增 PROMPT",
-            icon="add",
             on_click=show_create_prompt,
         ).props("outline")
         operation_controls.append(create_button)
         ui.space()
         publish_button = ui.button(
             "推送选中",
-            icon="upload",
             on_click=publish_selected,
         ).props("outline")
         operation_controls.append(publish_button)
@@ -513,23 +510,23 @@ def create_prompt_manage_page() -> None:
     with table.add_slot("body-cell-action"):
         with table.cell("action"):
             with ui.element("div").classes("prompt-row-actions"):
-                ui.button(icon="visibility").props("flat dense round").tooltip("详情").on(
+                ui.button("详情").props("flat dense").on(
                     "click",
                     js_handler='() => emit({"action": "detail", "id": props.row.id})',
                     handler=handle_action,
                 )
-                edit_button = ui.button(icon="edit").props(
-                    'flat dense round :disable="!props.row.can_modify"'
+                edit_button = ui.button("编辑").props(
+                    'flat dense :disable="!props.row.can_modify"'
                 )
-                edit_button.tooltip("编辑").on(
+                edit_button.on(
                     "click",
                     js_handler='() => emit({"action": "edit", "id": props.row.id})',
                     handler=handle_action,
                 )
-                delete_button = ui.button(icon="delete").props(
-                    'flat dense round color=negative :disable="!props.row.can_modify"'
+                delete_button = ui.button("删除").props(
+                    'flat dense color=negative :disable="!props.row.can_modify"'
                 )
-                delete_button.tooltip("删除").on(
+                delete_button.on(
                     "click",
                     js_handler='() => emit({"action": "delete", "id": props.row.id})',
                     handler=handle_action,

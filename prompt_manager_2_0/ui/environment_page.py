@@ -54,19 +54,17 @@ def create_environment_page() -> None:
         with table.add_slot("body-cell-action"):
             with table.cell("action"):
                 with ui.row().classes("gap-1 justify-end no-wrap"):
-                    ui.button(icon="edit").props("flat dense round").tooltip("编辑").on(
+                    ui.button("编辑").props("flat dense").on(
                         "click",
                         js_handler='() => emit({"action": "edit", "id": props.row.id})',
                         handler=handle_action,
                     )
-                    ui.button(icon="sync").props("flat dense round").tooltip("同步").on(
+                    ui.button("同步").props("flat dense").on(
                         "click",
                         js_handler='() => emit({"action": "sync", "id": props.row.id})',
                         handler=handle_action,
                     )
-                    ui.button(icon="delete").props(
-                        "flat dense round color=negative"
-                    ).tooltip("删除").on(
+                    ui.button("删除").props("flat dense color=negative").on(
                         "click",
                         js_handler='() => emit({"action": "delete", "id": props.row.id})',
                         handler=handle_action,
@@ -140,9 +138,9 @@ def create_environment_page() -> None:
                 environment_table.refresh()
 
             with ui.row().classes("justify-end w-full"):
-                ui.button("取消", icon="close", on_click=dialog.close).props("flat")
-                ui.button("测试连接", icon="link", on_click=test_connection).props("outline")
-                ui.button("保存并同步", icon="save", on_click=save)
+                ui.button("取消", on_click=dialog.close).props("flat")
+                ui.button("测试连接", on_click=test_connection).props("outline")
+                ui.button("保存并同步", on_click=save)
 
         dialog.open()
 
@@ -176,8 +174,8 @@ def create_environment_page() -> None:
                 environment_table.refresh()
 
             with ui.row().classes("justify-end w-full"):
-                ui.button("取消", icon="close", on_click=dialog.close).props("flat")
-                ui.button("删除", icon="delete", on_click=confirm).props("color=negative")
+                ui.button("取消", on_click=dialog.close).props("flat")
+                ui.button("删除", on_click=confirm).props("color=negative")
         dialog.open()
 
     def sync_environment(environment_id: str) -> None:
@@ -201,5 +199,5 @@ def create_environment_page() -> None:
     ui.label("数据库环境配置").classes("text-xl font-semibold")
     ui.label(f"配置文件路径：{service.config_path}").classes("text-sm text-gray-600")
     with ui.row().classes("items-center gap-2"):
-        ui.button("新增", icon="add", on_click=lambda: open_editor())
+        ui.button("新增", on_click=lambda: open_editor())
     environment_table()
