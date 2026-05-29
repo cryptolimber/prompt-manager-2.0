@@ -24,7 +24,7 @@ def index() -> None:
         environment_tab = ui.tab("数据库环境")
         prompt_tab = ui.tab("Prompt 管理")
 
-    with ui.tab_panels(tabs, value=environment_tab).classes("w-full"):
+    with ui.tab_panels(tabs, value=prompt_tab).classes("w-full"):
         with ui.tab_panel(environment_tab):
             create_environment_page()
         with ui.tab_panel(prompt_tab):

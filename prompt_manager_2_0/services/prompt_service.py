@@ -22,13 +22,11 @@ class PromptService:
         self,
         *,
         environment_id: str,
-        page: int,
-        page_size: int,
     ) -> tuple[list[dict[str, Any]], int]:
         environment = self.config_manager.get_environment(environment_id)
         repository = PromptRepository(environment)
-        total = repository.count()
-        rows = repository.list_page(page=page, page_size=page_size)
+        rows = repository.list_all()
+        total = len(rows)
         last_modify_times = self.local_status_repository.get_last_modify_times(
             db_identify=build_db_identify(environment),
             prompt_ids=[int(row["id"]) for row in rows],

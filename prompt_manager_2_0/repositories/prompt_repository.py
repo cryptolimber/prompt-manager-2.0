@@ -7,8 +7,6 @@ from contextlib import contextmanager
 from datetime import datetime
 from typing import Any
 
-from peewee import fn
-
 from prompt_manager_2_0.config.config_manager import EnvironmentConfig
 from prompt_manager_2_0.config.constants import (
     PROMPT_ALL_FIELDS,
@@ -39,31 +37,12 @@ class PromptRepository:
             if not self.database.is_closed():
                 self.database.close()
 
-    def count(self) -> int:
-        with self.connection():
-            return int(
-                AiagPromptTemplate.select(fn.COUNT(AiagPromptTemplate.id))
-                .where(self.not_deleted_condition())
-                .scalar()
-                or 0
-            )
-
-    def list_page(self, *, page: int, page_size: int) -> list[dict[str, Any]]:
-        with self.connection():
-            query = (
-                AiagPromptTemplate.select()
-                .where(self.not_deleted_condition())
-                .order_by(AiagPromptTemplate.id.asc())
-                .paginate(page, page_size)
-            )
-            return [self.to_dict(item) for item in query]
-
     def list_all(self) -> list[dict[str, Any]]:
         with self.connection():
             query = (
                 AiagPromptTemplate.select()
                 .where(self.not_deleted_condition())
-                .order_by(AiagPromptTemplate.id.asc())
+                .order_by(AiagPromptTemplate.id.desc())
             )
             return [self.to_dict(item) for item in query]
 

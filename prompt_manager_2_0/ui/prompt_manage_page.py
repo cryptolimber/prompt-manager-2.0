@@ -2,17 +2,14 @@
 
 from __future__ import annotations
 
-from math import ceil
 from typing import Any
 
 from nicegui import ui
 
 from prompt_manager_2_0.config.constants import (
-    DEFAULT_PAGE_SIZE,
     ENV_TYPE_DEV,
     ENV_TYPE_PRE_RELEASE,
     ENV_TYPE_TEST,
-    PAGE_SIZE_OPTIONS,
     PROMPT_ALL_FIELDS,
     PROMPT_DISPLAY_FIELDS,
     PROMPT_EDITABLE_FIELDS,
@@ -136,8 +133,6 @@ def create_prompt_manage_page() -> None:
     state: dict[str, Any] = {
         "environment_id": next(iter(options), None),
         "target_environment_id": None,
-        "page": 1,
-        "page_size": DEFAULT_PAGE_SIZE,
         "total": 0,
         "selected_ids": [],
     }
@@ -171,33 +166,27 @@ def create_prompt_manage_page() -> None:
             table.update()
             update_operation_controls()
             total_label.set_text("共 0 条")
-            page_label.set_text("第 1 / 1 页")
             return
         try:
             rows, total = prompt_service.list_prompts(
                 environment_id=state["environment_id"],
-                page=state["page"],
-                page_size=state["page_size"],
             )
         except Exception as error:
             notify_error(error)
             return
         state["total"] = total
         state["selected_ids"] = []
-        sequence_start = (state["page"] - 1) * state["page_size"] + 1
         can_modify = current_environment_can_modify()
         table.rows = [
             format_prompt_row(
                 row,
-                sequence=sequence_start + index,
+                sequence=index + 1,
                 can_modify=can_modify,
             )
             for index, row in enumerate(rows)
         ]
         table.update()
         update_operation_controls()
-        total_pages = max(1, ceil(total / state["page_size"]))
-        page_label.set_text(f"第 {state['page']} / {total_pages} 页")
         total_label.set_text(f"共 {total} 条")
 
     def refresh_environment_options() -> None:
@@ -212,29 +201,10 @@ def create_prompt_manage_page() -> None:
 
     def on_environment_change(event) -> None:
         state["environment_id"] = event.value
-        state["page"] = 1
-        load_rows()
-
-    def on_page_size_change(event) -> None:
-        state["page_size"] = int(event.value)
-        state["page"] = 1
         load_rows()
 
     def on_select(event) -> None:
         state["selected_ids"] = [int(row["id"]) for row in event.selection]
-
-    def previous_page() -> None:
-        if state["page"] <= 1:
-            return
-        state["page"] -= 1
-        load_rows()
-
-    def next_page() -> None:
-        total_pages = max(1, ceil(state["total"] / state["page_size"]))
-        if state["page"] >= total_pages:
-            return
-        state["page"] += 1
-        load_rows()
 
     def show_detail(prompt_id: int) -> None:
         try:
@@ -314,7 +284,6 @@ def create_prompt_manage_page() -> None:
                     notify_error(error)
                     return
                 notify_success("PROMPT 已新增")
-                state["page"] = 1
                 dialog.close()
                 load_rows()
 
@@ -567,16 +536,6 @@ def create_prompt_manage_page() -> None:
                 )
 
     with ui.row().classes("items-center w-full gap-2"):
-        page_size_select = ui.select(
-            PAGE_SIZE_OPTIONS,
-            label="每页数量",
-            value=state["page_size"],
-            on_change=on_page_size_change,
-        ).classes("w-32")
-        ui.space()
         total_label = ui.label("共 0 条")
-        page_label = ui.label("第 1 / 1 页")
-        ui.button(icon="chevron_left", on_click=previous_page).tooltip("上一页")
-        ui.button(icon="chevron_right", on_click=next_page).tooltip("下一页")
 
     load_rows()

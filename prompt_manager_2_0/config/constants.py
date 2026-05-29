@@ -22,9 +22,6 @@ ENV_TYPE_OPTIONS = [
     for value, label in ENV_TYPE_LABELS.items()
 ]
 
-PAGE_SIZE_OPTIONS = [10, 15, 20]
-DEFAULT_PAGE_SIZE = 15
-
 PROMPT_DISPLAY_FIELDS = [
     "id",
     "code",
