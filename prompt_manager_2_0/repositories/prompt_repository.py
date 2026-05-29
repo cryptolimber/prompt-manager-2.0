@@ -11,6 +11,7 @@ from prompt_manager_2_0.config.config_manager import EnvironmentConfig
 from prompt_manager_2_0.config.constants import (
     PROMPT_ALL_FIELDS,
     PROMPT_EDITABLE_FIELDS,
+    PROMPT_SEARCH_FIELDS,
 )
 from prompt_manager_2_0.db.models.mysql_models import (
     AiagPromptTemplate,
@@ -37,11 +38,23 @@ class PromptRepository:
             if not self.database.is_closed():
                 self.database.close()
 
-    def list_all(self) -> list[dict[str, Any]]:
+    def list_all(
+        self,
+        *,
+        search_field: str | None = None,
+        search_keyword: str | None = None,
+    ) -> list[dict[str, Any]]:
         with self.connection():
+            conditions = [self.not_deleted_condition()]
+            keyword = (search_keyword or "").strip()
+            if keyword:
+                if search_field not in PROMPT_SEARCH_FIELDS:
+                    raise ValueError("不支持的 Prompt 搜索字段")
+                field = getattr(AiagPromptTemplate, str(search_field))
+                conditions.append(field.contains(keyword))
             query = (
                 AiagPromptTemplate.select()
-                .where(self.not_deleted_condition())
+                .where(*conditions)
                 .order_by(AiagPromptTemplate.id.desc())
             )
             return [self.to_dict(item) for item in query]

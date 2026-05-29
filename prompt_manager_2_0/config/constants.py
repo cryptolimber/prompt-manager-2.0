@@ -31,6 +31,13 @@ PROMPT_DISPLAY_FIELDS = [
     "is_active",
 ]
 
+PROMPT_SEARCH_FIELDS = {
+    "code": "code",
+    "description": "description",
+    "version": "version",
+    "category": "category",
+}
+
 PROMPT_ALL_FIELDS = [
     "id",
     "prompt_content",

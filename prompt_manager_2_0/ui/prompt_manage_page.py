@@ -14,6 +14,7 @@ from prompt_manager_2_0.config.constants import (
     PROMPT_DISPLAY_FIELDS,
     PROMPT_EDITABLE_FIELDS,
     PROMPT_READONLY_EDIT_FIELDS,
+    PROMPT_SEARCH_FIELDS,
 )
 from prompt_manager_2_0.services.environment_service import EnvironmentService
 from prompt_manager_2_0.services.prompt_service import PromptService
@@ -135,6 +136,8 @@ def create_prompt_manage_page() -> None:
         "target_environment_id": None,
         "total": 0,
         "selected_ids": [],
+        "search_field": "code",
+        "search_keyword": "",
     }
     table_holder: dict[str, Any] = {}
     operation_controls: list[Any] = []
@@ -170,6 +173,8 @@ def create_prompt_manage_page() -> None:
         try:
             rows, total = prompt_service.list_prompts(
                 environment_id=state["environment_id"],
+                search_field=state["search_field"],
+                search_keyword=state["search_keyword"],
             )
         except Exception as error:
             notify_error(error)
@@ -197,6 +202,17 @@ def create_prompt_manage_page() -> None:
             state["environment_id"] = next(iter(fresh_options), None)
             env_select.value = state["environment_id"]
         env_select.update()
+        load_rows()
+
+    def refresh_database() -> None:
+        state["search_keyword"] = ""
+        search_input.value = ""
+        search_input.update()
+        load_rows()
+
+    def apply_search() -> None:
+        state["search_field"] = search_field_select.value or "code"
+        state["search_keyword"] = (search_input.value or "").strip()
         load_rows()
 
     def on_environment_change(event) -> None:
@@ -482,7 +498,7 @@ def create_prompt_manage_page() -> None:
             on_change=on_environment_change,
         ).classes("min-w-72")
         ui.button("刷新环境", on_click=refresh_environment_options).props("outline")
-        ui.button("刷新数据库", on_click=load_rows)
+        ui.button("刷新数据库", on_click=refresh_database)
         create_button = ui.button(
             "新增 PROMPT",
             on_click=show_create_prompt,
@@ -494,6 +510,15 @@ def create_prompt_manage_page() -> None:
             on_click=publish_selected,
         ).props("outline")
         operation_controls.append(publish_button)
+
+    with ui.row().classes("items-center gap-2 w-full"):
+        search_field_select = ui.select(
+            PROMPT_SEARCH_FIELDS,
+            label="搜索字段",
+            value=state["search_field"],
+        ).classes("w-40")
+        search_input = ui.input("搜索内容").classes("flex-1 min-w-64")
+        ui.button("搜索", on_click=apply_search)
 
     with ui.element("div").classes(
         "prompt-table-scroll border border-gray-200 rounded"

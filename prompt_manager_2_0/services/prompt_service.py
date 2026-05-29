@@ -22,10 +22,15 @@ class PromptService:
         self,
         *,
         environment_id: str,
+        search_field: str | None = None,
+        search_keyword: str | None = None,
     ) -> tuple[list[dict[str, Any]], int]:
         environment = self.config_manager.get_environment(environment_id)
         repository = PromptRepository(environment)
-        rows = repository.list_all()
+        rows = repository.list_all(
+            search_field=search_field,
+            search_keyword=search_keyword,
+        )
         total = len(rows)
         last_modify_times = self.local_status_repository.get_last_modify_times(
             db_identify=build_db_identify(environment),
