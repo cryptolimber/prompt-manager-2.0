@@ -483,7 +483,7 @@ def create_prompt_manage_page() -> None:
             on_change=on_environment_change,
         ).classes("min-w-72")
         ui.button("刷新环境", icon="refresh", on_click=refresh_environment_options).props("outline")
-        ui.button("查询", icon="search", on_click=load_rows)
+        ui.button("刷新数据库", on_click=load_rows)
         create_button = ui.button(
             "新增 PROMPT",
             icon="add",
